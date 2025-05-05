@@ -1,4 +1,10 @@
 // scripts/deploy.js
+// Per executar aquest script correctament:
+// 1. En una terminal: npx hardhat node
+// 2. En una altra terminal: npx hardhat run scripts/deploy.js --network localhost
+
+const { formatUnits } = require("ethers");
+
 async function main() {
     // Hardhat Network provides 10 default accounts
     // The first one is used by default by ethers.getSigners()
@@ -15,7 +21,7 @@ async function main() {
     console.log(`Balanç del deployer (${deployer.address}):`);
     const balance = await token.balanceOf(deployer.address);
     // formatUnits(balance, 18) assumeix 18 decimals, com ERC20 per defecte
-    console.log(`  ${ethers.utils.formatUnits(balance, 18)} MTK`);
+    console.log(`  ${formatUnits(balance, 18)} MTK`);
 }
 
 main()

@@ -1,44 +1,45 @@
 // .devcontainer/devcontainer.json
 {
-    "name": "Curs Blockchain Hardhat", // Nom que apareixerà al Codespace
+    "name": "Blockchain Hardhat Course", // Name that will appear in the Codespace
   
-    // Utilitza una imatge de contenidor pre-construïda amb Node.js (més ràpid)
-    // Pots trobar imatges amb Node.js a Docker Hub o utilitzar les de Microsoft
-    // "mcr.microsoft.com/devcontainers/universal:latest" és una bona opció amb moltes eines preinstal·lades
+    // Use a pre-built container image with Node.js (faster)
+    // You can find Node.js images on Docker Hub or use Microsoft's
+    // "mcr.microsoft.com/devcontainers/universal:latest" is a good option with many pre-installed tools
     "image": "mcr.microsoft.com/devcontainers/universal:latest",
-    // O si vols una imatge més lleugera només amb Node:
+    // Or if you want a lighter image with just Node:
     // "image": "mcr.microsoft.com/devcontainers/javascript-node:latest",
   
   
-    // Comandes que s'executaran AUTOMÀTICAMENT en crear el contenidor
-    // npm install és el més important aquí per instal·lar les dependències del projecte
+    // Commands that will be executed AUTOMATICALLY when creating the container
+    // npm install is the most important here to install the project dependencies
     "postCreateCommand": "npm install",
   
-    // Comandes que s'executaran CADA VEGADA que s'inicia el Codespace
-    // Utilitza-ho per mostrar instruccions o obrir fitxers
-    "postStartCommand": "echo '##############################################################' && echo '# Benvingut al teu entorn de desenvolupament Blockchain!     #' && echo '# 1. Revisa el contracte a contracts/Token.sol               #' && echo '# 2. Obre la terminal (Ctrl+`)                               #' && echo '# 3. Desplega el contracte (copia l\'adreça):                 #' && echo '#    npx hardhat run scripts/deploy.js                       #' && echo '# 4. Edita scripts/interact.js amb l\'adreça del contracte.   #' && echo '# 5. Interactua amb el contracte:                            #' && echo '#    npx hardhat run scripts/interact.js                     #' && echo '##############################################################' && code README.md || true && code contracts/Token.sol || true && code scripts/deploy.js || true && code scripts/interact.js || true",
+    // Commands that will be executed EACH TIME the Codespace starts
+    // Use this to display instructions or open files
+    "postStartCommand": "echo '##############################################################' && echo '# Welcome to your Blockchain development environment!       #' && echo '# 1. Review the contract in contracts/Token.sol              #' && echo '# 2. Open a terminal (Ctrl+`)                                #' && echo '# 3. Start a local Hardhat node:                             #' && echo '#    npx hardhat node                                        #' && echo '# 4. Open a new terminal and deploy the contract:            #' && echo '#    npx hardhat run scripts/deploy.js --network localhost    #' && echo '# 5. Interact with the contract:                             #' && echo '#    npx hardhat run scripts/interact.js --network localhost  #' && echo '##############################################################' && code github_codespaces.md || true && code contracts/Token.sol || true && code scripts/deploy.js || true && code scripts/interact.js || true && code hardhat.config.js || true",
   
   
-    // Configuració específica de VS Code dins del Codespace
+    // VS Code specific configuration within the Codespace
     "customizations": {
       "vscode": {
         "extensions": [
-          "NomicFoundation.hardhat-solidity" // Recomana l'extensió de Solidity
-          // Pots afegir altres extensions útils (eslinter, prettier, etc.)
+          "NomicFoundation.hardhat-solidity", // Solidity extension for syntax highlighting and more
+          "dbaeumer.vscode-eslint",           // ESLint for JavaScript linting
+          "esbenp.prettier-vscode"            // Prettier for code formatting
         ]
       }
     },
   
-    // Ports que es podrien exposar (no necessari per a Hardhat Network local)
-    // "forwardPorts": [8545], // Port per defecte de Hardhat Network
-    // "portsAttributes": {
-    //   "8545": {
-    //     "label": "Hardhat Network RPC",
-    //     "onAutoForward": "ignore"
-    //   }
-    // },
+    // Ports to expose (necessary for Hardhat Network local)
+    "forwardPorts": [8545], // Default Hardhat Network port
+    "portsAttributes": {
+      "8545": {
+        "label": "Hardhat Network RPC",
+        "onAutoForward": "notify"
+      }
+    },
   
-    // Opcions de Docker (no solen ser necessàries per a casos bàsics)
-    // "remoteUser": "codespace" // Utilitza l'usuari per defecte de codespaces
+    // Docker options (usually not necessary for basic cases)
+    // "remoteUser": "codespace" // Use the default codespaces user
   
   }
