@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Connect MetaMask to Codespaces Hardhat</title>
+<style>
+  body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 50px; line-height: 1.6; }
+  h1, h2 { color: #333; }
+  .container { background-color: #f9f9f9; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); max-width: 600px; text-align: center; }
+  label { display: block; margin-bottom: 8px; font-weight: bold; }
+  input[type="text"] { padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; width: calc(100% - 22px); font-size: 14px; }
+  button { background-color: #04AA6D; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.3s ease; }
+  button:hover { background-color: #037F52; }
+  #status { margin-top: 20px; padding: 10px; border-radius: 4px; }
+  .status-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .status-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .status-info { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Connect MetaMask to Your Codespaces Hardhat Network</h1>
+
+    <p>Before proceeding:</p>
+    <ol>
+      <li>Ensure your Hardhat node is running in your Codespace terminal (<code>npx hardhat node</code>).</li>
+      <li>Go to the "PORTS" tab in your Codespaces terminal area.</li>
+      <li>Find the entry for port <strong>8545</strong> (your Hardhat node RPC).</li>
+      <li>Copy the "Local address" provided by Codespaces for port 8545. It will look something like <code>https://your-codespace-name-####.preview.app.github.dev</code>.</li>
+    </ol>
+
+    <label for="rpcUrlInput">Paste the Codespaces Hardhat RPC URL (port 8545) here:</label>
+    <input type="text" id="rpcUrlInput" placeholder="e.g., https://your-codespace-name-####.preview.app.github.dev">
+
+    <button onclick="addNetwork()">Add Hardhat Network to MetaMask</button>
+
+    <div id="status" class="status-info"></div>
+  </div>
+
+  <script>
+    const statusElement = document.getElementById('status');
+    const rpcUrlInput = document.getElementById('rpcUrlInput');
+
+    // Initial status message
+    statusElement.textContent = 'Enter the URL and click the button.';
+    statusElement.className = 'status-info';
+
+
+    async function addNetwork() {
+      const rpcUrl = rpcUrlInput.value.trim();
+
+      if (!rpcUrl) {
+        statusElement.textContent = 'Please enter the forwarded RPC URL for port 8545.';
+        statusElement.className = 'status-error';
+        return;
+      }
+
+      // Basic validation to check if it looks like a URL
+       if (!rpcUrl.startsWith('http://') && !rpcUrl.startsWith('https://')) {
+           statusElement.textContent = 'Please enter a valid URL starting with http:// or https://';
+           statusElement.className = 'status-error';
+           return;
+       }
+
+
+      if (!window.ethereum) {
+        statusElement.textContent = 'MetaMask is not installed or not detected in your browser.';
+        statusElement.className = 'status-error';
+        return;
+      }
+
+      try {
+        statusElement.textContent = 'Attempting to add network to MetaMask...';
+        statusElement.className = 'status-info';
+
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x7a69', // 31337 in hexadecimal for Hardhat Network
+            rpcUrls: [rpcUrl],
+            chainName: 'Codespaces Hardhat',
+            nativeCurrency: {
+              name: 'Ether',
+              symbol: 'ETH',
+              decimals: 18
+            },
+            blockExplorerUrls: null // No block explorer for a local network
+          }]
+        });
+
+        statusElement.textContent = 'Network added successfully! Switch to "Codespaces Hardhat" in MetaMask.';
+        statusElement.className = 'status-success';
+
+      } catch (error) {
+        // Handle specific MetaMask errors if needed
+        if (error.code === 4001) {
+             statusElement.textContent = 'MetaMask - User rejected the request.';
+             statusElement.className = 'status-error';
+        } else if (error.code === -32602) {
+             statusElement.textContent = 'MetaMask - Invalid parameters provided.';
+             statusElement.className = 'status-error';
+        }
+        else {
+             statusElement.textContent = `Failed to add network: ${error.message || error}`;
+             statusElement.className = 'status-error';
+        }
+        console.error("MetaMask connection error:", error);
+      }
+    }
+  </script>
+</body>
+</html>
