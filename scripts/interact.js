@@ -5,10 +5,11 @@
 // 3. Després: npx hardhat run scripts/interact.js --network localhost
 
 const { formatUnits, parseUnits } = require("ethers");
-const colors = require("./utils/colors");
+const c = require("./utils/colors");
 
-// CONFIGURACIÓ: Substitueix aquestes variables amb els valors adequats
-const TOKEN_ADDRESS = "ADREÇA_DEL_CONTRACTE_AQUI"; // Adreça del contracte desplegat
+// CONFIGURACIÓ
+const TOKEN_NAME      = "MyToken" // Nom del contracte (ha de coincidir amb el nom del contracte a Solidity)
+const TOKEN_ADDRESS   = "ADREÇA_DEL_CONTRACTE_AQUI"; // Adreça del contracte desplegat
 const RECIPIENT_ACCOUNT_INDEX = 1; // Índex del compte que rebrà els tokens (0-19, on 1 és el segon compte generat per Hardhat)
 const TRANSFER_AMOUNT = "1"; // Quantitat de tokens a transferir (en format string)
 
@@ -18,57 +19,58 @@ async function main() {
 
     // Comprovar si l'adreça del contracte s'ha substituït
     if (TOKEN_ADDRESS === "ADREÇA_DEL_CONTRACTE_AQUI") {
-        console.error(`${colors.red}${colors.bright}ERROR: Si us plau, substitueix ADREÇA_DEL_CONTRACTE_AQUI per l'adreça real del contracte desplegat.${colors.reset}`);
+        console.error(`${c.red}${c.bright}ERROR: Si us plau, substitueix ADREÇA_DEL_CONTRACTE_AQUI per l'adreça real del contracte desplegat.${c.reset}`);
         process.exit(1);
     }
 
-    console.log(`${colors.cyan}${colors.bright}==========================`);
+    console.log(`${c.cyan}${c.bright}==========================`);
     console.log(`=====  INTERACT SCRIPT =====`);
-    console.log(`==========================${colors.reset}`);
+    console.log(`==========================${c.reset}`);
     console.log(``);
-    console.log(`${colors.blue}Connectant...`);
-    console.log(`${colors.blue}Al contracte de l'adreça: ${colors.yellow}${TOKEN_ADDRESS}${colors.reset}`);
+    console.log(`${c.blue}Connectant...`);
+    console.log(`${c.blue}Al contracte de l'adreça: ${c.yellow}${TOKEN_ADDRESS}${c.reset}`);
 
     // Obtenim una instància del contracte desplegat
-    const MyToken = await ethers.getContractFactory("MyToken");
+    const MyToken = await ethers.getContractFactory(TOKEN_NAME);
     const token = await MyToken.attach(TOKEN_ADDRESS);
 
     // Obtenim informació del token
-    const tokenName = await token.name();
-    const tokenSymbol = await token.symbol();
+    const tokenName     = await token.name();
+    const tokenSymbol   = await token.symbol();
     const tokenDecimals = await token.decimals();
+    const balance       = await token.balanceOf(signer.address); // Saldo del compte per defecte
     
-    console.log(`${colors.blue}         \\ Token Name   : ${colors.yellow}${tokenName}${colors.reset}`);
-    console.log(`${colors.blue}         \\ Token Symbol : ${colors.yellow}${tokenSymbol}${colors.reset}`);
+    console.log(`${c.blue}         \\ Token Name   : ${c.yellow}${tokenName}${c.reset}`);
+    console.log(`${c.blue}         \\ Token Symbol : ${c.yellow}${tokenSymbol}${c.reset}`);
     console.log(``);
-    console.log(`${colors.blue}Utilitzant el compte    : ${colors.yellow}${signer.address}${colors.reset}`);
-
-    // Crida una funció del contracte (ex: balanceOf)
-    const balance = await token.balanceOf(signer.address);
-    console.log(`${colors.blue}         \\ Saldo        : ${colors.yellow}${formatUnits(balance, tokenDecimals)} ${tokenSymbol}${colors.reset}`);
+    console.log(`${c.blue}Utilitzant el compte    : ${c.yellow}${signer.address}${c.reset}`);
+    console.log(`${c.blue}         \\ Saldo        : ${c.yellow}${formatUnits(balance, tokenDecimals)} ${tokenSymbol}${c.reset}`);
 
     // Opcional: Mostrar com fer una transferència (afegir més tard si hi ha temps)
-    console.log(`\n${colors.magenta}${colors.bright}Fent una transferència de ${TRANSFER_AMOUNT} ${tokenSymbol} a un altre compte (accounts[${RECIPIENT_ACCOUNT_INDEX}])...${colors.reset}`);
+    console.log(`\n${c.magenta}${c.bright}Fent una transferència de ${TRANSFER_AMOUNT} ${tokenSymbol} a un altre compte (accounts[${RECIPIENT_ACCOUNT_INDEX}])...${c.reset}`);
+
     const accounts = await ethers.getSigners();
     const recipient = accounts[RECIPIENT_ACCOUNT_INDEX].address;
     const amount = parseUnits(TRANSFER_AMOUNT, tokenDecimals); // Tokens amb els decimals corresponents
+
     try {
         const tx = await token.connect(signer).transfer(recipient, amount);
         await tx.wait(); // Esperar que la transacció es "mini" (a la xarxa local és instantani)
-        console.log(`  ${colors.green}${colors.bright}Transferència completada a ${colors.yellow}${recipient}${colors.reset}`);
         const recipientBalance = await token.balanceOf(recipient);
+        const senderBalance    = await token.balanceOf(signer.address);
+
+        console.log(`  ${c.green}${c.bright}Transferència completada a ${c.yellow}${recipient}${c.reset}`);
         console.log(``);
-        console.log(`  ${colors.blue}Nou balanç del receptor (${colors.yellow}${recipient}${colors.blue}): ${colors.yellow}${formatUnits(recipientBalance, tokenDecimals)} ${tokenSymbol}${colors.reset}`);
-        const senderBalance = await token.balanceOf(signer.address);
-        console.log(`  ${colors.blue}Nou balanç del pagador  (${colors.yellow}${signer.address}${colors.blue}): ${colors.yellow}${formatUnits(senderBalance, tokenDecimals)} ${tokenSymbol}${colors.reset}`);
+        console.log(`  ${c.blue}Nou balanç del receptor (${c.yellow}${recipient}${c.blue}): ${c.yellow}${formatUnits(recipientBalance, tokenDecimals)} ${tokenSymbol}${c.reset}`);
+        console.log(`  ${c.blue}Nou balanç del pagador  (${c.yellow}${signer.address}${c.blue}): ${c.yellow}${formatUnits(senderBalance, tokenDecimals)} ${tokenSymbol}${c.reset}`);
     } catch (error) {
-         console.error(`${colors.red}${colors.bright}Error durant la transferència: ${error}${colors.reset}`);
+         console.error(`${c.red}${c.bright}Error durant la transferència: ${error}${c.reset}`);
     }
 }
 
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(`${colors.red}${colors.bright}${error}${colors.reset}`);
+        console.error(`${c.red}${c.bright}${error}${c.reset}`);
         process.exit(1);
     });

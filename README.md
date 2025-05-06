@@ -13,36 +13,44 @@ trobar la presentació a [aquest enllaç](https://docs.google.com/presentation/d
 ## **Part 2**. Taller pràctic blockchain (1h)
 
 ### 2.1 Configuració de l'entorn de treball
-Això no cal fer-ho perquè usem Github Codespaces, però si ho feu localment, seguiu aquests passos:
-
+Hi ha dues manreres d'instal·lar el projecte:
+1. **Github Codespaces**: 
+   - AIXÒ és que farem aquest curs. 
+   - Aneu al repositori Github del curs [aquí](https://github.com/Biyiud/curs-blockchain-hardhat) i feu login.
+   - Aneu a la pestanya **[<> Code]**, seleccioneu **"Codespaces"**, i allà **"New codespace"**.
+2. **Instal·lació local**:
+   - Si no teniu un compte de Github o preferiu treballar localment, podeu instal·lar el projecte al vostre ordinador. 
+   - Assegureu-vos de tenir instal·lat [Node.js](https://nodejs.org/en/download/) i [npm](https://www.npmjs.com/get-npm) abans de continuar.
+   - Després, seguiu les instruccions d'instal·lació que es troben a l'[annex](#annex-installació-en-local) d'aquest document.
 
 ### 2.2. Revisar contracte i scripts
 Revisar els fitxers del projecte.
 
-- `hardhat.config.js`: 
+- [`hardhat.config.js`](hardhat.config.js): 
     - Aquest és el fitxer de configuració de Hardhat. Aquí es defineixen les xarxes, els comptes i altres opcions de configuració.
     - En aquest cas especifica la xarxa local (localhost) i es defineix el compte del creador del contracte.
     - Al treballar amb xarxa local, podrem desplegar i interactuar amb els contractes sense necessitat de pagar gas. I les accions es realitzaran immediatament.
-- `contracts/Token.sol`: 
-   - El contracte és un ERC-20, i defineix un token anomenat `MyToken` amb un subnom `MTK`.
-   - El contracte té una oferta inicial de 1.000.000 tokens assignats a l'adreça del creador del contracte.
+- [`contracts/Token.sol`](contracts/Token.sol):
+   - El contracte és un ERC-20, i defineix un token anomenat `MyToken` amb símbol `MTK`.
+   - El contracte té una oferta inicial de 1.000 tokens assignats a l'adreça del creador del contracte.
    - El contracte permet transferir tokens entre adreces i consultar el saldo d'una adreça.
 
-- `scripts/deploy.js`: 
+- [`scripts/deploy.js`](scripts/deploy.js): 
   - El script de desplegament. Aquest script es connecta a la xarxa local i publica el contracte al blockchain.
   - El script crea una instància del contracte i l'assigna a l'adreça del creador.
   - Després, imprimeix l'adreça del contracte desplegat a la consola.
-- `scripts/interact.js`:
-  - El script d'interacció. Aquest script interactua amb el contracte desplegat, permetent-nos consultar els saldos i transferir tokens.
-  - El script crea una instància del contracte i imprimeix el saldo de l'adreça del creador.
-  - Després, realitza una transferència de tokens a una altra adreça (per defecte, la segona adreça generada per Hardhat).
-- `package.json`: 
-  - El fitxer de configuració de npm. Aquí es defineixen les dependències del projecte i els scripts que podem executar.
+  
+- [`scripts/interact.js`](scripts/interact.js):
+  - El script d'interacció, que crida al contracte desplegat anteriorment, permetent-nos consultar els saldos i transferir tokens entre adreces.
+  - Al executar-se, realitza una transferència de tokens a una altra adreça de les creades per hardhat.
+  
+- [`package.json`](package.json): 
+  - El fitxer de configuració de `npm`. Aquí es defineixen les dependències del projecte i els scripts que podem executar.
   - En aquest cas, no hi ha scripts definits, però podem afegir-ne si cal.
 
 ### 2.3 Desplegar contracte i interaccionar amb ell
 
-1. Dins del visual Studio Code proveit per Codespaces, obriu una terminal i executeu les següents comandes:
+1. Dins del Visual Studio Code de Github Codespaces, obriu una terminal i executeu les següents comandes:
 
 ```bash
 # Instal·lar les dependències del projecte (indicades del fitxer package.json)
@@ -115,6 +123,7 @@ Són scripts dissenyats per executar-se dins de l'entorn d'execució de Hardhat.
 * Instal·lar [Node.js](https://nodejs.org/en/download/)
 * Instal·lar [npm](https://www.npmjs.com/get-npm)
 * Instal·lar [Visual Studio Code](https://code.visualstudio.com/download)
+* Instal·lar [Metamask](https://metamask.io/download.html) al navegador (Chrome, Firefox, Brave o Edge).
 
 ### Passos d'instal·lació
 1. Clonar el repositori:

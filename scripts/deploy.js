@@ -6,6 +6,10 @@
 const { formatUnits } = require("ethers");
 const colors = require("./utils/colors");
 
+// CONFIGURACIÓ
+// Nom del contracte (ha de coincidir amb el nom del contracte a Solidity)
+const TOKEN_NAME="MyToken"
+
 async function main() {
     // Hardhat Network provides 10 default accounts
     // The first one is used by default by ethers.getSigners()
@@ -17,7 +21,7 @@ async function main() {
     console.log(``);
     console.log(`${colors.blue}Desplegant contracte amb el compte #0: ${colors.yellow}${deployer.address}${colors.reset}`);
 
-    const Token = await ethers.getContractFactory("MyToken");
+    const Token = await ethers.getContractFactory(TOKEN_NAME);
     const token = await Token.deploy(); // Deploy to the default network (Hardhat Network)
 
     try {
@@ -28,10 +32,10 @@ async function main() {
         process.exit(1);
     }
 
-    const address = await token.getAddress();
-    const balance = await token.balanceOf(deployer.address);
-    const tokenName = await token.name();
+    const tokenName   = await token.name();
     const tokenSymbol = await token.symbol();
+    const address     = await token.getAddress();
+    const balance     = await token.balanceOf(deployer.address);
 
     console.log(``);
     console.log(`${colors.cyan}${colors.bright}Balanç del desplegament : `);
