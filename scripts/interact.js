@@ -61,8 +61,8 @@ async function main() {
 
         console.log(`  ${c.green}${c.bright}Transferència completada a ${c.yellow}${recipient}${c.reset}`);
         console.log(``);
-        console.log(`  ${c.blue}Nou balanç del receptor (${c.yellow}${recipient}${c.blue}): ${c.yellow}${formatUnits(recipientBalance, tokenDecimals)} ${tokenSymbol}${c.reset}`);
         console.log(`  ${c.blue}Nou balanç del pagador  (${c.yellow}${signer.address}${c.blue}): ${c.yellow}${formatUnits(senderBalance, tokenDecimals)} ${tokenSymbol}${c.reset}`);
+        console.log(`  ${c.blue}Nou balanç del receptor (${c.yellow}${recipient}${c.blue}): ${c.yellow}${formatUnits(recipientBalance, tokenDecimals)} ${tokenSymbol}${c.reset}`);
     } catch (error) {
          console.error(`${c.red}${c.bright}Error durant la transferència: ${error}${c.reset}`);
     }
