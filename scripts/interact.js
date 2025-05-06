@@ -5,8 +5,12 @@
 // 3. Després: npx hardhat run scripts/interact.js --network localhost
 
 const { formatUnits, parseUnits } = require("ethers");
+const colors = require("./utils/colors");
 
+// CONFIGURACIÓ: Substitueix aquestes variables amb els valors adequats
 const TOKEN_ADDRESS = "ADREÇA_DEL_CONTRACTE_AQUI"; // Adreça del contracte desplegat
+const RECIPIENT_ACCOUNT_INDEX = 1; // Índex del compte que rebrà els tokens (0-19, on 1 és el segon compte generat per Hardhat)
+const TRANSFER_AMOUNT = "1"; // Quantitat de tokens a transferir (en format string)
 
 async function main() {
     // Obtenim el primer compte per defecte (el mateix que el deployer a la xarxa local)
@@ -14,44 +18,57 @@ async function main() {
 
     // Comprovar si l'adreça del contracte s'ha substituït
     if (TOKEN_ADDRESS === "ADREÇA_DEL_CONTRACTE_AQUI") {
-        console.error("ERROR: Si us plau, substitueix ADREÇA_DEL_CONTRACTE_AQUI per l'adreça real del contracte desplegat.");
+        console.error(`${colors.red}${colors.bright}ERROR: Si us plau, substitueix ADREÇA_DEL_CONTRACTE_AQUI per l'adreça real del contracte desplegat.${colors.reset}`);
         process.exit(1);
     }
 
-    console.log(`Connectant al contracte a l'adreça: ${TOKEN_ADDRESS}`);
-    console.log(`Utilitzant el compte: ${signer.address}`);
+    console.log(`${colors.cyan}${colors.bright}==========================`);
+    console.log(`=====  INTERACT SCRIPT =====`);
+    console.log(`==========================${colors.reset}`);
+    console.log(``);
+    console.log(`${colors.blue}Connectant...`);
+    console.log(`${colors.blue}Al contracte de l'adreça: ${colors.yellow}${TOKEN_ADDRESS}${colors.reset}`);
 
     // Obtenim una instància del contracte desplegat
     const MyToken = await ethers.getContractFactory("MyToken");
     const token = await MyToken.attach(TOKEN_ADDRESS);
 
+    // Obtenim informació del token
+    const tokenName = await token.name();
+    const tokenSymbol = await token.symbol();
+    const tokenDecimals = await token.decimals();
+    
+    console.log(`${colors.blue}         \\ Token Name   : ${colors.yellow}${tokenName}${colors.reset}`);
+    console.log(`${colors.blue}         \\ Token Symbol : ${colors.yellow}${tokenSymbol}${colors.reset}`);
+    console.log(``);
+    console.log(`${colors.blue}Utilitzant el compte    : ${colors.yellow}${signer.address}${colors.reset}`);
+
     // Crida una funció del contracte (ex: balanceOf)
     const balance = await token.balanceOf(signer.address);
-
-    console.log(`Balanç de MTK per al compte ${signer.address}:`);
-    console.log(`  ${formatUnits(balance, 18)} MTK`);
+    console.log(`${colors.blue}         \\ Saldo        : ${colors.yellow}${formatUnits(balance, tokenDecimals)} ${tokenSymbol}${colors.reset}`);
 
     // Opcional: Mostrar com fer una transferència (afegir més tard si hi ha temps)
-    console.log("\nFent una transferència d'1 MTK a un altre compte (ex: accounts[1])...");
+    console.log(`\n${colors.magenta}${colors.bright}Fent una transferència de ${TRANSFER_AMOUNT} ${tokenSymbol} a un altre compte (accounts[${RECIPIENT_ACCOUNT_INDEX}])...${colors.reset}`);
     const accounts = await ethers.getSigners();
-    const recipient = accounts[1].address;
-    const amount = parseUnits("1", 18); // 1 MTK (amb 18 decimals)
+    const recipient = accounts[RECIPIENT_ACCOUNT_INDEX].address;
+    const amount = parseUnits(TRANSFER_AMOUNT, tokenDecimals); // Tokens amb els decimals corresponents
     try {
         const tx = await token.connect(signer).transfer(recipient, amount);
         await tx.wait(); // Esperar que la transacció es "mini" (a la xarxa local és instantani)
-        console.log(`  Transferència completada a ${recipient}`);
+        console.log(`  ${colors.green}${colors.bright}Transferència completada a ${colors.yellow}${recipient}${colors.reset}`);
         const recipientBalance = await token.balanceOf(recipient);
-        console.log(`  Nou balanç de ${recipient}: ${formatUnits(recipientBalance, 18)} MTK`);
+        console.log(``);
+        console.log(`  ${colors.blue}Nou balanç del receptor (${colors.yellow}${recipient}${colors.blue}): ${colors.yellow}${formatUnits(recipientBalance, tokenDecimals)} ${tokenSymbol}${colors.reset}`);
         const senderBalance = await token.balanceOf(signer.address);
-        console.log(`  Nou balanç del deployer (${signer.address}): ${formatUnits(senderBalance, 18)} MTK`);
+        console.log(`  ${colors.blue}Nou balanç del pagador  (${colors.yellow}${signer.address}${colors.blue}): ${colors.yellow}${formatUnits(senderBalance, tokenDecimals)} ${tokenSymbol}${colors.reset}`);
     } catch (error) {
-         console.error("Error durant la transferència:", error);
+         console.error(`${colors.red}${colors.bright}Error durant la transferència: ${error}${colors.reset}`);
     }
 }
 
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(error);
+        console.error(`${colors.red}${colors.bright}${error}${colors.reset}`);
         process.exit(1);
     });
