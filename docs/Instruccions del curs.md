@@ -6,9 +6,10 @@ Revisem primer els fitxers del projecte:
     - Aquest és el fitxer de configuració de Hardhat. Aquí es defineixen les xarxes, els comptes i altres opcions de configuració.
     - En aquest cas especifica la xarxa local (localhost) i es defineix el compte del creador del contracte.
     - Al treballar amb xarxa local, podrem desplegar i interactuar amb els contractes sense necessitat de pagar gas. I les accions es realitzaran immediatament.
+
 - [`contracts/Token.sol`](/contracts/Token.sol)
    - El contracte és un ERC-20, i defineix un token anomenat `MyToken` amb símbol `MTK`.
-   - El contracte té una oferta inicial de 1.000.000 de tokens assignats a l'adreça del creador del contracte.
+   - El contracte genera 50.000.000 de tokens i els assigna a l'adreça del creador del contracte.
    - El contracte permet transferir tokens entre adreces i consultar el saldo d'una adreça.
 
 - [`scripts/deploy.js`](/scripts/deploy.js)
@@ -36,6 +37,8 @@ npm install   # NO CAL a Codespaces, ja que ja estan instal·lades
 # (crea un blockchain local i adreces d'usuari)
 npx hardhat node
 ```
+
+Copiar les adreces generades per Hardhat al fitxer [adreces.txt](/adreces.txt), doncs les necessitarem més endavant.
 
 2. Obriu una altra terminal (fent **divisió vertical**) i executeu el següent:
 ```bash
@@ -97,3 +100,19 @@ npx hardhat run scripts/interact.js --network localhost
 ```
 - Ara hauries de veure el saldo actualitzat quasi a l'instant al teu compte de Metamask.
 
+### 2.5 Distribució massiva de tokens (OPCIONAL)
+
+S'ha creat un script addicional per distribuir 1.000.000 de tokens a cadascuna de les adreces generades per Hardhat:
+
+1. Configura el script [`scripts/distribute.js`](/scripts/distribute.js):
+   - Aquest script transfereix 1.000.000 de tokens a cadascuna de les adreces generades per Hardhat.
+   - Edita la variable `TOKEN_ADDRESS` i substitueix "ADREÇA_DEL_CONTRACTE_AQUI" per l'adreça real del contracte desplegat.
+
+2. Executa el script de distribució:
+```bash
+npx hardhat run scripts/distribute.js --network localhost
+```
+
+3. Verifica els saldos:
+   - El script mostrarà els saldos actualitzats de cada adreça després de la transferència.
+   - Pots importar qualsevol de les adreces a Metamask (utilitzant la seva clau privada) per veure el saldo.

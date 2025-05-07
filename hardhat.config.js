@@ -7,7 +7,7 @@ module.exports = {
     hardhat: {
       accounts: {
         mnemonic: "test test test test test test test test test test test junk",
-        count: 5, // Generate only 5 accounts
+        count: 30,
       },
     },
     localhost: {
